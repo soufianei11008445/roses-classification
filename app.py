@@ -1,28 +1,35 @@
 import streamlit as st
-from fastai.vision.all import *
+import gdown
+import torch
 
-# Load the best model
-best_model_path = '/Users/yassinkissami/Downloads/RosesDataset 2/best_model.pth'  # Update with your actual path
-loaded_model = load_learner(best_model_path)
+# Function to download the model
+def download_model():
+    file_id = '1IjMM3B8Wk0g1Y-1vsd6M_L6_JBw2qYPq'
+    output_path = '/content'  # Adjust the output path as needed
+    download_link = f'https://drive.google.com/uc?id={file_id}'
+    gdown.download(download_link, output_path, quiet=False)
+    return output_path
+
+# Download the model
+model_path = download_model()
+
+# Load the model
+model = torch.load(model_path)
 
 # Streamlit app
 def main():
-    st.title("Rose Classification App")
-    st.sidebar.title("Options")
+    st.title('Your Streamlit App Title')
 
-    # File upload
-    uploaded_file = st.sidebar.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
+    # Your Streamlit app content goes here
 
+    # Example: Display a prediction using the loaded model
+    uploaded_file = st.file_uploader("Choose an image...", type="jpg")
     if uploaded_file is not None:
-        # Display the uploaded image
-        st.image(uploaded_file, caption="Uploaded Image.", use_column_width=True)
+        # Make predictions using your model
+        prediction = model.predict(uploaded_file)
 
-        # Make predictions using the model
-        prediction, _, probabilities = loaded_model.predict(PILImage.create(uploaded_file))
-        
         # Display the prediction
         st.write(f"Prediction: {prediction}")
-        st.write(f"Probabilities: {probabilities}")
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
